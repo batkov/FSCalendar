@@ -286,11 +286,12 @@ typedef NS_ENUM(NSUInteger, FSCalendarOrientation) {
     
     if (_needsAdjustingViewFrame) {
         _needsAdjustingViewFrame = NO;
-        
+        /*
         if (CGSizeEqualToSize(_transitionCoordinator.cachedMonthSize, CGSizeZero)) {
             _transitionCoordinator.cachedMonthSize = self.frame.size;
         }
-        
+        */
+        _transitionCoordinator.cachedMonthSize = self.frame.size;
         _contentView.frame = self.bounds;
         CGFloat headerHeight = self.preferredHeaderHeight;
         CGFloat weekdayHeight = self.preferredWeekdayHeight;
@@ -926,12 +927,21 @@ typedef NS_ENUM(NSUInteger, FSCalendarOrientation) {
         CGFloat contentHeight = self.transitionCoordinator.cachedMonthSize.height-headerHeight-weekdayHeight;
         CGFloat padding = 5;
         if (!self.floatingMode) {
-            _preferredRowHeight = (contentHeight-padding*2)/6.0;
+            _preferredRowHeight = (contentHeight-padding*2)/self.numberOfRows;
         } else {
             _preferredRowHeight = _rowHeight;
         }
     }
     return _preferredRowHeight;
+}
+
+- (CGFloat) numberOfRows {
+    switch (_transitionCoordinator.representingScope) {
+        case FSCalendarScopeWeek:
+            return 1;
+        default:
+            return 6; // Should we calculate for a month?
+    }
 }
 
 - (BOOL)floatingMode
